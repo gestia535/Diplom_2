@@ -1,21 +1,23 @@
 import allure
 import pytest
 import requests
-from data import CREATE_USER, existing_user_data
-from helpers import login_generator, password_generator, name_generator, delete_user
+from data import CREATE_USER, existing_user_data, DELETE_USER
+from helpers import login_generator, password_generator, name_generator
 
 
 class TestCreateUser:
 
     @allure.title('Проверка успешной регистрации пользователя при заполненных обязательных полях')
     @allure.description('Проверка получения кода 200 Ok и сообщения {success": True} при отправке POST-запроса '
-                        'на регистрацию пользователя при заполненных полях email, password и name валидными данными')
+                        'на регистрацию пользователя при заполненных полях email, password и name валидными данными. '
+                        'После теста аккаунт удаляется')
     def test_create_new_user_success(self):
         payload = {'email': login_generator(), 'password': password_generator(), 'name': name_generator()}
         headers = {'Content-Type': 'application/json'}
         response = requests.post(CREATE_USER, json=payload, headers=headers)
         assert response.status_code == 200 and response.json().get('success') is True
-        delete_user(response)
+        access_token = response.json().get('accessToken')
+        requests.delete(DELETE_USER, headers={'Authorization': access_token})
 
     @allure.title('Проверка неудачной регистрации уже зарегистрированного пользователя')
     @allure.description('Проверка получения кода 403 Forbidden и сообщения '

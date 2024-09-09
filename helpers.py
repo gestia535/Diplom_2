@@ -1,8 +1,5 @@
-import requests
 import random
 import string
-
-from data import DELETE_USER
 
 first_names = ['aleksandr', 'ivan', 'mariya', 'anna', 'dmitriy',
                'ekaterina', 'nikolay', 'olga', 'vladimir', 'natalya']
@@ -33,8 +30,3 @@ def generate_random_string(length):
     letters = string.ascii_lowercase
     random_string = ''.join(random.choice(letters) for _ in range(length))
     return random_string
-
-
-def delete_user(response_data):
-    access_token = response_data.json().get('accessToken')
-    requests.delete(DELETE_USER, headers={'Authorization': access_token})
