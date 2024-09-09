@@ -20,24 +20,9 @@ def create_user():
 
 
 @pytest.fixture()
-def create_and_login_user():
-    payload = {'email': login_generator(), 'password': password_generator(), 'name': name_generator()}
-    requests.post(CREATE_USER, json=payload)
-    login_response = requests.post(LOGIN_USER, json=payload)
-    token = login_response.json().get('accessToken')
-    yield payload, login_response
-    access_token = token
-    requests.delete(DELETE_USER, headers={'Authorization': access_token})
-
-
-@pytest.fixture()
-def create_login_and_order():
-    payload = {'email': login_generator(), 'password': password_generator(), 'name': name_generator()}
-    requests.post(CREATE_USER, json=payload)
-    login_response = requests.post(LOGIN_USER, json=payload)
-    access_token = login_response.json().get('accessToken')
-    order_payload = correct_ingredients
-    headers = {'Authorization': f'{access_token}'}
-    order_response = requests.post(CREATE_ORDER, json=order_payload, headers=headers)
-    yield login_response, order_response
-    requests.delete(DELETE_USER, headers={'Authorization': access_token})
+def create_order(create_user):
+    access_token = create_user[1]['accessToken']
+    headers = {'Authorization': access_token}
+    payload = correct_ingredients
+    response_body = requests.post(CREATE_ORDER, json=payload, headers=headers)
+    yield access_token, response_body

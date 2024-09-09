@@ -16,11 +16,9 @@ class TestsChangeUserData:
         ("password", password_generator()),
         ("name", name_generator())
     ])
-    def test_update_data_with_auth_success(self, create_and_login_user, update_field, new_value):
-        payload, login_response = create_and_login_user
-        access_token = login_response.json().get('accessToken')
+    def test_update_data_with_auth_success(self, create_user, update_field, new_value):
         update_payload = {update_field: new_value}
-        headers = {'Authorization': f'{access_token}'}
+        headers = {'Authorization': create_user[1]['accessToken']}
         response = requests.patch(UPDATE_USER_DATA, json=update_payload, headers=headers)
         assert response.status_code == 200 and response.json().get('success') is True
 

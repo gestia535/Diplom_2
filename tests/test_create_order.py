@@ -9,11 +9,12 @@ class TestCreateOrder:
                   'для авторизованного пользователя')
     @allure.description('Проверка получения кода 200 Ok и сообщения {"success": True} при отправке POST-запроса '
                         'с корректными данными об ингредиентах на создание заказа авторизованного пользователя')
-    def test_create_order_with_auth_success(self, create_and_login_user):
-        payload, login_response = create_and_login_user
-        access_token = login_response.json().get('accessToken')
+    def test_create_order_with_auth_success(self, create_user):
+        # payload, login_response = create_and_login_user
+        # access_token = login_response.json().get('accessToken')
         order_payload = correct_ingredients
-        headers = {'Authorization': f'{access_token}'}
+        # headers = {'Authorization': f'{access_token}'}
+        headers = {'Authorization': create_user[1]['accessToken']}
         order_response = requests.post(CREATE_ORDER, json=order_payload, headers=headers)
         assert order_response.status_code == 200 and order_response.json().get('success') is True
 
